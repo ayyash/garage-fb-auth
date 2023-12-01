@@ -47,12 +47,7 @@ const AppRouteProviders = [provideRouter(AppRoutes)];
 
 const fbApp = () =>
   initializeApp({
-    apiKey: 'AIzaSyCHBiAIxrs5sFa3tmryQ11sG9P192_AwsI',
-    authDomain: 'abajor-web.firebaseapp.com',
-    projectId: 'abajor-web',
-    storageBucket: 'abajor-web.appspot.com',
-    messagingSenderId: '69179931415',
-    appId: '1:69179931415:web:e077653eee2689c1b8d552',
+    /* fb console */
   });
 const authApp = () => initializeAuth(fbApp());
 
