@@ -18,7 +18,7 @@ export class PublicLoginComponent implements OnInit {
 
   login() {
     this.authService
-      .Login('new4@email.com', 'adAd!123')
+      .Login('admin@email.com', 'adAd!123')
       .pipe(
         // it's better to pipe catchError
         catchError((error) => {
@@ -36,8 +36,10 @@ export class PublicLoginComponent implements OnInit {
 
   // example register with email
   signUp() {
+    const rnd = Math.floor(Math.random() * 1000);
+
     this.authService
-      .Signup('admin2@email.com', 'adAd!123', { bloodType: 'B+' })
+      .Signup(`user${ rnd }@email.com`, 'adAd!123', { bloodType: 'B+' })
       .pipe(
         catchError((error) => {
           console.log(error);

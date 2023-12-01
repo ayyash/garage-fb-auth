@@ -7,7 +7,8 @@ import {
   idToken,
   GoogleAuthProvider,
   signInWithPopup,
-  getAdditionalUserInfo
+  getAdditionalUserInfo,
+  signOut
 } from '@angular/fire/auth';
 
 import { tap, Observable, defer, switchMap } from 'rxjs';
@@ -27,7 +28,7 @@ export class AuthService {
     const res = () => signInWithEmailAndPassword(this.auth, email, password);
     return defer(res).pipe(
       // get the token
-      switchMap((auth) => (<any>auth).user.getIdToken()),
+      switchMap((auth) => auth.user.getIdToken()),
       tap((token) => {
         // save state as well
         this.authState.UpdateState(token);
@@ -35,7 +36,6 @@ export class AuthService {
     );
   }
   LoginGoogle(): any {
-    // cannot implement this in stackblitz
     const provider = new GoogleAuthProvider();
     const res = () =>
       signInWithPopup(this.auth, provider).then((userCredential) => {
@@ -53,9 +53,8 @@ export class AuthService {
     // after creating the user, we need to send it back to our API to create custom claims
     return defer(res).pipe(
       // first IdToken
-      switchMap(_ => idToken(this.auth)),
+      switchMap(_ => this.auth.currentUser.getIdToken()),
       tap((token: string) => {
-        console.log(token);
         // save state first
         this.authState.UpdateState(token);
       }),
@@ -63,8 +62,17 @@ export class AuthService {
     );
   }
 
-  UpdateUser(customClaims: any): Observable<any> {
-    return this.http.post('/user', customClaims);
-    // map to getTokenIdResults
+  UpdateUser(custom: any): Observable<any> {
+    return this.http.post('/user', custom).pipe(
+      tap(_ => this.auth.currentUser.getIdTokenResult(true))
+    );
+  }
+  Signout(): Observable<boolean> {
+    const res = () => signOut(this.auth).then(() => {
+      this.authState.Logout();
+      return true;
+    });
+  
+    return defer(res);
   }
 }

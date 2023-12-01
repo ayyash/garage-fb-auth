@@ -27,7 +27,7 @@ export const AppInterceptorFn: HttpInterceptorFn = (
 ) => {
   // prefixing the api with proper value, mostly from config
   // remote config url are expected to filtered out, it would not make sense
-  const url = 'https://saphire.sekrab.com/api' + req.url;
+  const url = 'http://localhost:10000/api' + req.url;
 
   const adjustedReq = req.clone({
     url: url,

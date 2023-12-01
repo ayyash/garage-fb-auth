@@ -24,4 +24,8 @@ export class AuthState {
   UpdateState(token: string) {
     this.token.next(token);
   }
+
+  Logout() {
+    this.token.next(null);
+  }
 }

@@ -9,9 +9,10 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { PublicLoginComponent } from './app/components/public/login.component';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { initializeAuth, provideAuth } from '@angular/fire/auth';
+import { browserPopupRedirectResolver, browserSessionPersistence, initializeAuth, provideAuth } from '@angular/fire/auth';
 import { AppInterceptorFn } from './app/services/http.fn';
 import { AuthState } from './app/services/auth.state';
+import { AuthCanActivate } from './app/services/auth.guard';
 
 const AppRoutes: Routes = [
   {
@@ -27,6 +28,8 @@ const AppRoutes: Routes = [
     path: 'private',
     loadChildren: () =>
       import('./app/routes/dashboard.route').then((m) => m.DashboardRoutes),
+    canActivate: [AuthCanActivate],
+    data: { role: 'admin'}
   },
 ];
 
@@ -36,7 +39,7 @@ const CoreProviders = [
   {
     provide: APP_INITIALIZER,
     // dummy factory
-    useFactory: () => () => {},
+    useFactory: () => () => { },
     multi: true,
     // injected depdencies, this will be constructed immidiately
     deps: [AuthState],
@@ -54,8 +57,11 @@ const fbApp = () =>
     messagingSenderId: '69179931415',
     appId: '1:69179931415:web:e077653eee2689c1b8d552',
   });
-const authApp = () => initializeAuth(fbApp());
-
+  const authApp = () => initializeAuth(fbApp(), {
+    persistence: browserSessionPersistence,
+    popupRedirectResolver: browserPopupRedirectResolver
+  });
+  
 const firebaseProviders: EnvironmentProviders = importProvidersFrom([
   provideFirebaseApp(fbApp),
   provideAuth(authApp),
@@ -69,3 +75,4 @@ bootstrapApplication(AppComponent, {
     firebaseProviders,
   ],
 });
+

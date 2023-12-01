@@ -20,33 +20,28 @@ module.exports = function (sdk) {
 
   // a route to update user props, mainly bloodType
   router.post('/user', function (req, res) {
-    // update local user with custom claims
     const user = res.locals.user;
-    // read body params, could be an object
-    const bloodType = req.body.bloodType;
-    // set admin to true, set a new property bloodType
-    // you can also use getAuth() from firebase-admin/auth directly
-    // getAuth().setCustomClaims...
-    sdk
-      .auth()
-      .setCustomUserClaims(user.uid, { admin: true, bloodType })
-      .then(() => {
-        // reassign res user
-        res.locals.user = {
-          ...user,
-          admin: true,
-          bloodType,
-        };
-        // return user
-        res.json({
-          data: res.locals.user,
-        });
-      })
-      .catch(function (error) {
-        res.status(401).json({
-          message: 'Invalid token',
-        });
+    if (!user) {
+      res.status(401).json({
+        message: 'Access denied',
+        code: 'ACCESS_DENIED',
       });
+      return;
+    }
+
+    const bloodType = req.body.bloodType;
+
+    sdk.auth().setCustomUserClaims(user.uid, { admin: true, bloodType }).then(() => {
+
+      res.json({
+        data: res.locals.user
+      });
+    }).catch(function (error) {
+      res.status(401).json({
+        message: 'Invalid token',
+        code: 'INVALID_TOKEN'
+      });
+    });
   });
 
   // export and use this router in the main server
