@@ -1,0 +1,24 @@
+<header>
+  <div class="page">
+    <div class="container">
+      <ul class="row boxed">
+        <li>
+          <a routerLink="/public/login">Login</a>
+        </li>
+        <li>
+          <a routerLink="/projects">Projects</a>
+        </li>
+        <li>
+          <a routerLink="/private/dashboard">Dashboard</a>
+        </li>
+        <li>
+          <!-- logout, and decide whehter to reroute -->
+          <a (click)="Logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <cr-account-status></cr-account-status>
+</header>
+
+<router-outlet></router-outlet>
