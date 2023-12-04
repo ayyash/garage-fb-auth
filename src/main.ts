@@ -1,18 +1,16 @@
-import {
-  EnvironmentProviders,
-  importProvidersFrom,
-  APP_INITIALIZER,
-} from '@angular/core';
-import { AppComponent } from './app/app.component';
-import { Routes, provideRouter } from '@angular/router';
-import { bootstrapApplication } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { PublicLoginComponent } from './app/components/public/login.component';
+import {
+    EnvironmentProviders,
+    importProvidersFrom
+} from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { browserPopupRedirectResolver, browserSessionPersistence, initializeAuth, provideAuth } from '@angular/fire/auth';
-import { AppInterceptorFn } from './app/services/http.fn';
-import { AuthState } from './app/services/auth.state';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { Routes, provideRouter } from '@angular/router';
+import { AppComponent } from './app/app.component';
+import { PublicLoginComponent } from './app/components/public/login.component';
 import { AuthCanActivate } from './app/services/auth.guard';
+import { AppInterceptorFn } from './app/services/http.fn';
 
 const AppRoutes: Routes = [
   {
@@ -36,14 +34,14 @@ const AppRoutes: Routes = [
 // add a provider to array of providers
 const CoreProviders = [
   provideHttpClient(withInterceptors([AppInterceptorFn])),
-  {
-    provide: APP_INITIALIZER,
-    // dummy factory
-    useFactory: () => () => { },
-    multi: true,
-    // injected depdencies, this will be constructed immidiately
-    deps: [AuthState],
-  },
+//   {
+//     provide: APP_INITIALIZER,
+//     // dummy factory
+//     useFactory: () => () => { },
+//     multi: true,
+//     // injected depdencies, this will be constructed immidiately
+//     deps: [AuthState],
+//   },
 ];
 
 const AppRouteProviders = [provideRouter(AppRoutes)];

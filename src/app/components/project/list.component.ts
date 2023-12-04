@@ -1,24 +1,23 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { AccountStatusPartialComponent } from '../private/status.partial';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   template: `
       <div class="page"><div class="container">
       <h4 class="f4">Projects</h4>
       Nothing special,  
-      <cr-account-status></cr-account-status>
       <br  >
       <button class="btn-rev" (click)="callHttp()">Test HTTP call</button>
       </div></div>
     `,
   standalone: true,
-  imports: [CommonModule, AccountStatusPartialComponent],
+  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectListComponent implements OnInit {
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     //
   }
   ngOnInit(): void {}
@@ -27,7 +26,10 @@ export class ProjectListComponent implements OnInit {
     // call http with anything to test http interceptor
     this.http.get('/auth/login').subscribe({
       next: (result) => console.log(result),
-      error: (err) => console.log(err),
+      error: (err) => {
+        console.log(err);
+        this.router.navigateByUrl('/public/login');
+      },
     });
   }
 }

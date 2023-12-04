@@ -31,7 +31,7 @@ export const AuthCanActivate: CanActivateFn = (route: ActivatedRouteSnapshot, st
             }
             // user exists, match claims to route data? here we 
             if (!_user.claims.hasOwnProperty(role)) {
-                router.navigateByUrl('/private/dashboard');
+                router.navigateByUrl('/public/login');
                 return false;
             }
             return true;

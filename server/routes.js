@@ -4,7 +4,7 @@ const express = require('express');
 module.exports = function (sdk) {
   var router = express.Router();
 
-  router.get('/account', function (req, res) {
+  router.get('/auth/login', function (req, res) {
     // get auth from req locals
     const user = res.locals.user;
     if (user) {
@@ -14,6 +14,7 @@ module.exports = function (sdk) {
     } else {
       res.status(401).json({
         message: 'Invalid token',
+        code: 'INVALID_TOKEN'
       });
     }
   });

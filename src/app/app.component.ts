@@ -1,8 +1,7 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AccountStatusPartialComponent } from './components/private/status.partial';
-import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'my-app',
@@ -12,15 +11,15 @@ import { AuthService } from './services/auth.service';
   imports: [CommonModule, RouterModule, AccountStatusPartialComponent],
 })
 export class AppComponent {
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private router: Router) {
   }
   Logout() {
-    this.authService.Signout().subscribe({
-      next: (res) => {
-        if (res) {
-          this.router.navigateByUrl('/public/login');
-        }
-      }
-    })
+    // this.authService.Signout().subscribe({
+    //   next: (res) => {
+    //     if (res) {
+    //       this.router.navigateByUrl('/public/login');
+    //     }
+    //   }
+    // })
   }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { map, Observable, switchMap, filter } from 'rxjs';
-import { Auth } from '@angular/fire/auth';
+import { Auth, user } from '@angular/fire/auth';
 
 @Component({
   selector: 'cr-account-status',
@@ -23,10 +23,10 @@ export class AccountStatusPartialComponent implements OnInit {
   constructor(private auth: Auth) {}
   ngOnInit(): void {
     // solution I: keep it foriegn, use authState or user()
-    // this.status$ = user(this.auth).pipe(
-    //   filter((user) => !!user),
-    //   switchMap((user) => (<any>user).getIdTokenResult()),
-    //   map((token) => (<any>token).claims)
-    // );
+    this.status$ = user(this.auth).pipe(
+      filter((user) => !!user),
+      switchMap((user) => (<any>user).getIdTokenResult()),
+      map((token) => (<any>token).claims)
+    );
   }
 }

@@ -23,10 +23,10 @@ webapi.options("/*", function (req, res, next) {
 
 
 const sdk = require('./firebase.sdk').sdk;
-
+ 
 const verify = require('./auth.middleware')(sdk);
 webapi.use(verify);
-
+ 
 // add routes, pass sdk only if needed
 // webapi.use('/api', require('./api/account')(sdk));
 // webapi.use('/api', require('./api/users')(sdk));
