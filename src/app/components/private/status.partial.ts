@@ -1,8 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { map, Observable, switchMap, filter } from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Auth, user } from '@angular/fire/auth';
+import { RouterModule } from '@angular/router';
+import { Observable, filter, map, switchMap } from 'rxjs';
 
 @Component({
   selector: 'cr-account-status',

@@ -12,7 +12,7 @@ module.exports = function (sdk) {
       authheader = authheader.substring('Bearer '.length);
       sdk
         .auth()
-        .verifyIdToken(authheader, true)
+        .verifyIdToken(authheader, false)
         .then(function (decodedToken) {
           // save in res locals
           console.log('decodedToken', decodedToken);

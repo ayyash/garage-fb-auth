@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { Auth, user } from '@angular/fire/auth';
+import { Auth, getIdTokenResult, user } from '@angular/fire/auth';
 
 import {
     ActivatedRouteSnapshot,
@@ -19,17 +19,17 @@ export const AuthCanActivate: CanActivateFn = (route: ActivatedRouteSnapshot, st
     const role = route.data.role;
 
     // watch user
-    return user(auth).pipe(
+    return  user(auth).pipe(
         // switch map to get claims
-        switchMap(_user => _user ? _user.getIdTokenResult() : of(null)),
+        switchMap(_user => _user ? getIdTokenResult(_user) : of(null)),
         map(_user => {
-            _attn(_user, 'here');
+            _attn(_user, 'authguard');
             // if user exists let them in, else redirect to login
             if (!_user) {
                 router.navigateByUrl('/public/login');
                 return false;
             }
-            // user exists, match claims to route data? here we 
+            // user exists, match claims to route data
             if (!_user.claims.hasOwnProperty(role)) {
                 router.navigateByUrl('/public/login');
                 return false;

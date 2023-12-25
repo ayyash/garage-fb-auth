@@ -1,5 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
+    APP_INITIALIZER,
     EnvironmentProviders,
     importProvidersFrom
 } from '@angular/core';
@@ -10,6 +11,7 @@ import { Routes, provideRouter } from '@angular/router';
 import { AppComponent } from './app/app.component';
 import { PublicLoginComponent } from './app/components/public/login.component';
 import { AuthCanActivate } from './app/services/auth.guard';
+import { AuthState } from './app/services/auth.state';
 import { AppInterceptorFn } from './app/services/http.fn';
 
 const AppRoutes: Routes = [
@@ -34,14 +36,14 @@ const AppRoutes: Routes = [
 // add a provider to array of providers
 const CoreProviders = [
   provideHttpClient(withInterceptors([AppInterceptorFn])),
-//   {
-//     provide: APP_INITIALIZER,
-//     // dummy factory
-//     useFactory: () => () => { },
-//     multi: true,
-//     // injected depdencies, this will be constructed immidiately
-//     deps: [AuthState],
-//   },
+  {
+    provide: APP_INITIALIZER,
+    // dummy factory
+    useFactory: () => () => { },
+    multi: true,
+    // injected depdencies, this will be constructed immidiately
+    deps: [AuthState],
+  },
 ];
 
 const AppRouteProviders = [provideRouter(AppRoutes)];

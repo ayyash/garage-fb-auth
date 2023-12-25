@@ -11,7 +11,7 @@ import { inject } from '@angular/core';
 import { Observable, Subject, catchError, filter, finalize, switchMap, throwError } from 'rxjs';
 import { AuthState } from './auth.state';
 
-const getHeaders = (authState): any => {
+const getHeaders = (authState: AuthState): any => {
   //  authorization here
   let headers: any = {};
   const _auth = authState.GetToken();
@@ -27,7 +27,7 @@ let isBusy = false;
 let recall: Subject<boolean> = new Subject();
 
 const  handle401Error = (originalReq: HttpRequest<any>, next: HttpHandlerFn, authState: AuthState): Observable<any> => {
-    
+    _attn('handle401Error');
 
     if (!isBusy) {
         isBusy = true;

@@ -1,40 +1,48 @@
 import { Injectable } from '@angular/core';
 import { Auth, idToken } from '@angular/fire/auth';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, defer, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthState {
-  // create an internal subject and an observable to keep track
-  private token: BehaviorSubject<string> = new BehaviorSubject(null);
-  token$: Observable<string> = this.token.asObservable();
+    // create an internal subject and an observable to keep track
+    private token: BehaviorSubject<string> = new BehaviorSubject(null);
+    token$: Observable<string> = this.token.asObservable();
 
-  constructor(private auth: Auth) {
-    // set the stateItem to that of idToken
-    // idToken(this.auth).subscribe({
-    //   next: (token) => {
-    //     _attn(token, 'new token')
-    //     this.UpdateState(token);
-    //   },
-    // });
-  }
 
-  GetToken() {
-    return this.token.getValue();
-  }
+    stateItem$: Observable<any>;
 
-  UpdateState(token: string) {
-    this.token.next(token);
-  }
-
-  Logout() {
-    this.token.next(null);
-  }
-
-  RefreshToken(): Observable<any> {
-    return idToken(this.auth).pipe(
-        tap((token) => {
+    constructor(private auth: Auth) {
+        // set the stateItem to that of idToken
+        idToken(this.auth)
+        .subscribe({
+          next: (token) => {
+            _attn(token, 'authstate');
             this.UpdateState(token);
-        }
-    ));
-  }
+          },
+        });
+
+    
+    }
+
+    GetToken() {
+        return this.token.getValue();
+    }
+
+    UpdateState(token: string) {
+        this.token.next(token);
+    }
+
+    Logout() {
+        this.token.next(null);
+    }
+
+    RefreshToken(): Observable<any> {
+        return defer(() => this.auth.currentUser.getIdToken(true)).pipe(
+            tap((token) => {
+                this.UpdateState(token);
+            })
+        );
+
+
+    }
 }

@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { throwError, catchError } from 'rxjs';
+import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -13,7 +13,9 @@ import { AuthService } from '../../services/auth.service';
 export class PublicLoginComponent implements OnInit {
   showMe = false; // mimic a sign up field
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService,
+    private cdr: ChangeDetectorRef, 
+    private router: Router) {}
   ngOnInit() {}
 
   login() {
@@ -66,11 +68,12 @@ export class PublicLoginComponent implements OnInit {
       )
       .subscribe({
         next: (user) => {
-          if (!user.isNewUser) {
+          if (!user) {
             this.router.navigateByUrl('/private/dashboard');
           } else {
             // show the sign up field
             this.showMe = true;
+            this.cdr.detectChanges();
           }
         },
       });

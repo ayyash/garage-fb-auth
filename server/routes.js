@@ -33,10 +33,10 @@ module.exports = function (sdk) {
     const bloodType = req.body.bloodType;
 
     sdk.auth().setCustomUserClaims(user.uid, { admin: true, bloodType }).then(() => {
+        console.log('updated user', user.uid, user.admin);
+      res.json({...user, bloodType, admin: true});
 
-      res.json({
-        data: res.locals.user
-      });
+      
     }).catch(function (error) {
       res.status(401).json({
         message: 'Invalid token',
