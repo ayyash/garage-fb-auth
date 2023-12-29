@@ -24,7 +24,7 @@ export class ProjectListComponent implements OnInit {
 
   callHttp() {
     // call http with anything to test http interceptor
-    this.http.get('/auth/login').subscribe({
+    this.http.get('/projects/list').subscribe({
       next: (result) => console.log(result),
       error: (err) => {
         console.log(err);

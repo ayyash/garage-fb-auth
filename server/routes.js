@@ -45,6 +45,19 @@ module.exports = function (sdk) {
     });
   });
 
+  router.get('/projects/list', function (req, res) {
+    // get auth from req locals
+    const user = res.locals.user;
+    if (user) {
+        res.json({something: 'something'});
+    } else {
+        res.status(401).json({
+            message: 'Access denied',
+            code: 'ACCESS_DENIED'
+        });
+    }
+});
+
   // export and use this router in the main server
   return router;
 };
