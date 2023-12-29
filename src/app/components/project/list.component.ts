@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { AccountStatusPartialComponent } from '../private/status.partial';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AccountStatusPartialComponent } from '../private/status.partial';
 
 @Component({
   template: `
@@ -18,16 +19,19 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectListComponent implements OnInit {
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,  private router: Router) {
     //
   }
   ngOnInit(): void {}
 
   callHttp() {
     // call http with anything to test http interceptor
-    this.http.get('/auth/login').subscribe({
+    this.http.get('/projects/list').subscribe({
       next: (result) => console.log(result),
-      error: (err) => console.log(err),
+      error: (err) => {
+        console.log(err);
+        this.router.navigateByUrl('/public/login');
+      },
     });
   }
 }

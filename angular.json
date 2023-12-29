@@ -48,16 +48,15 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "garage:build:serve"
+            "buildTarget": "garage:build:serve"
           },
           "configurations": {
             "production": {
-              "browserTarget": "garage:build:production"
+              "buildTarget": "garage:build:production"
             }
           }
         }
       }
     }
-  },
-  "defaultProject": "garage"
+  }
 }

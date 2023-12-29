@@ -1,3 +1,5 @@
+window._indebug = true;
+
 function _debug(o, message, type) {
     if (window && window._indebug) {
         switch (type) {

@@ -2,7 +2,7 @@
 // docs: https://firebase.google.com/docs/admin/setup
 const admin = require('firebase-admin');
 // this json is generated from Firebase Console project settings
-const serviceAccount = require('link-to-server-settings.json');
+const serviceAccount = require('../../abajor.json');
 
 // initialize firebase
 exports.sdk = admin.initializeApp({

@@ -1,8 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { map, Observable, switchMap, filter } from 'rxjs';
-import { Auth } from '@angular/fire/auth';
+import { Observable } from 'rxjs';
+import { IAuthInfo } from '../../services/auth.model';
+import { AuthState } from '../../services/auth.state';
 
 @Component({
   selector: 'cr-account-status',
@@ -17,16 +18,11 @@ import { Auth } from '@angular/fire/auth';
   imports: [CommonModule, RouterModule],
 })
 export class AccountStatusPartialComponent implements OnInit {
-  status$: Observable<any>;
+  status$: Observable<IAuthInfo>;
 
   // use firebase status
-  constructor(private auth: Auth) {}
+  constructor(private authState: AuthState) {}
   ngOnInit(): void {
-    // solution I: keep it foriegn, use authState or user()
-    // this.status$ = user(this.auth).pipe(
-    //   filter((user) => !!user),
-    //   switchMap((user) => (<any>user).getIdTokenResult()),
-    //   map((token) => (<any>token).claims)
-    // );
+    this.status$ = this.authState.stateItem$;
   }
 }

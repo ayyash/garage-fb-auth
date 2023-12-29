@@ -1,70 +1,100 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  Auth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  idToken,
-  GoogleAuthProvider,
-  signInWithPopup,
-  getAdditionalUserInfo
+    Auth,
+    GoogleAuthProvider,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut
 } from '@angular/fire/auth';
 
-import { tap, Observable, defer, switchMap } from 'rxjs';
+import { Observable, catchError, defer, map, switchMap, throwError } from 'rxjs';
 
+import { IAuthInfo, MapAuth } from './auth.model';
 import { AuthState } from './auth.state';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(
-    private http: HttpClient,
-    private authState: AuthState,
-    private auth: Auth
-  ) {}
+    constructor(
+        private http: HttpClient,
+        private authState: AuthState,
+        private auth: Auth
+    ) { }
 
-  // soliont I: keep it foreign
-  Login(email: string, password: string): Observable<any> {
-    const res = () => signInWithEmailAndPassword(this.auth, email, password);
-    return defer(res).pipe(
-      // get the token
-      switchMap((auth) => (<any>auth).user.getIdToken()),
-      tap((token) => {
-        // save state as well
-        this.authState.UpdateState(token);
-      })
-    );
-  }
-  LoginGoogle(): any {
-    // cannot implement this in stackblitz
-    const provider = new GoogleAuthProvider();
-    const res = () =>
-      signInWithPopup(this.auth, provider).then((userCredential) => {
-        const info = getAdditionalUserInfo(userCredential);
-        return info.isNewUser;
-      });
-    return defer(res);
-  }
+    
 
-  Signup(email: string, password: string, custom: any): Observable<any> {
-    // here send a sign up request, with extra params
-    const res = () =>
-      createUserWithEmailAndPassword(this.auth, email, password);
+    Login(email: string, password: string): Observable<IAuthInfo> {
+        const res = () => signInWithEmailAndPassword(this.auth, email, password);
+        return defer(res).pipe(
+            switchMap(auth => auth.user.getIdToken()),
+            switchMap(token => this.LoginUser(token, email)),
+            catchError(err => {
+                if (err.code === 'auth/invalid-credential') {
+                    return this.SingUp(email, password);
+                }
+                // do something local with the error
+                return throwError(() => err);
+            })
 
-    // after creating the user, we need to send it back to our API to create custom claims
-    return defer(res).pipe(
-      // first IdToken
-      switchMap(_ => idToken(this.auth)),
-      tap((token: string) => {
-        console.log(token);
-        // save state first
-        this.authState.UpdateState(token);
-      }),
-      switchMap((_) => this.UpdateUser(custom))
-    );
-  }
+        );
+    }
 
-  UpdateUser(customClaims: any): Observable<any> {
-    return this.http.post('/user', customClaims);
-    // map to getTokenIdResults
-  }
+    LoginGoogle(): Observable<IAuthInfo> {
+        const provider = new GoogleAuthProvider();
+        provider.addScope('email');
+        const res = () => signInWithPopup(this.auth, provider);
+
+        return defer(res).pipe(
+            switchMap(auth => auth.user.getIdToken()),
+            switchMap(token => this.LoginUser(token, this.auth.currentUser.providerData[0].email))
+        );
+    }
+
+
+    SingUp(email: string, password: string): Observable<IAuthInfo> {
+        // here send a sign up request, with extra params
+        const res = () =>
+            createUserWithEmailAndPassword(this.auth, email, password);
+
+        // after creating the user, we need to send it back to our API to create custom claims
+        return defer(res).pipe(
+            // first IdToken
+            switchMap(auth => auth.user.getIdToken()),
+            switchMap(token => this.LoginUser(token, email))
+        );
+    }
+
+
+    LoginUser(token: string, email?: any): Observable<IAuthInfo> {
+        return this.http.post('/auth/login', { token, email }).pipe(
+            map((auth: any) => {
+                // map and save user in localstorage here
+                const _user = MapAuth(auth);
+                this.authState.UpdateState({ ..._user, token });
+                return _user;
+            }),
+        );  
+    }
+
+
+    UpdateUser(custom: any): Observable<IAuthInfo> {
+        return this.http.patch('/user', custom).pipe(
+            map(auth => {
+                // now update localstorage again, without touching the token
+                const _user = MapAuth(auth);
+                this.authState.UpdateState({..._user});
+                return _user;
+            })
+        );
+    }
+
+    Signout(): Observable<boolean> {
+        const res = () => signOut(this.auth).then(() => {
+            this.authState.Logout();
+            return true;
+        });
+
+        return defer(res);
+    }
 }

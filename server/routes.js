@@ -1,54 +1,94 @@
 // example routes file for getting account information after firebase validation
 const express = require('express');
+const profiles = require('./data/profiles.json');
 
 module.exports = function (sdk) {
-  var router = express.Router();
+    var router = express.Router();
 
-  router.get('/account', function (req, res) {
-    // get auth from req locals
-    const user = res.locals.user;
-    if (user) {
-      res.json({
-        data: user,
-      });
-    } else {
-      res.status(401).json({
-        message: 'Invalid token',
-      });
-    }
-  });
+    
+    router.post('/auth/login', function (req, res) {
+        // if email does not exist create user, else update user
+        const payload = req.body;
+        const token = payload.token;
 
-  // a route to update user props, mainly bloodType
-  router.post('/user', function (req, res) {
-    // update local user with custom claims
-    const user = res.locals.user;
-    // read body params, could be an object
-    const bloodType = req.body.bloodType;
-    // set admin to true, set a new property bloodType
-    // you can also use getAuth() from firebase-admin/auth directly
-    // getAuth().setCustomClaims...
-    sdk
-      .auth()
-      .setCustomUserClaims(user.uid, { admin: true, bloodType })
-      .then(() => {
-        // reassign res user
-        res.locals.user = {
-          ...user,
-          admin: true,
-          bloodType,
-        };
-        // return user
-        res.json({
-          data: res.locals.user,
+        // we need to first verify token
+        sdk.auth().verifyIdToken(token).then(function (decodedToken) {
+            // then find user by id 
+            const id = decodedToken.uid;
+            let profile = profiles.find((profile) => profile.id === id);
+            const user = {
+                id: decodedToken.uid,
+                picture: decodedToken.picture,
+                email: payload.email// use the payload email
+                 
+            };
+            // if user does not exist, create one
+            if (!profile) {
+                
+                // save new user to db then return
+                // we don't have bloodType just yet
+                const newUser = {...user, admin: true, newUser: true};
+                profiles.push(newUser);
+                console.log(newUser);
+
+                res.json(newUser);
+            } else {
+                
+                // return existin user with full profile
+                console.log('existing user', profile);
+                // could be newUser = true
+                res.json({ ...profile, ...user});
+            }
+            
+
+        }).catch(function (error) {
+            res.status(401).json({
+                message: 'Invalid token',
+                code: 'INVALID_TOKEN',
+            });
         });
-      })
-      .catch(function (error) {
-        res.status(401).json({
-          message: 'Invalid token',
-        });
-      });
-  });
+    });
 
-  // export and use this router in the main server
-  return router;
+    router.patch('/user', function(req, res) {
+        // user exists in middleware
+        const user = res.locals.user;
+        console.log('update', user);
+
+        if (user) {
+            // update user in db with body inforation
+            const payload = req.body;
+            
+            // update db
+            let profile = profiles.find((profile) => profile.id === user.id);
+            profile.bloodType = payload.bloodType;
+            profile.newUser = false;
+
+            // save local
+            res.locals.user = profile;
+
+            // return user
+            res.json(profile);
+        } else {
+            res.status(401).json({
+                message: 'Access denied',
+                code: 'ACCESS_DENIED'
+            });
+        }
+    });
+
+    router.get('/projects/list', function (req, res) {
+        // get auth from req locals
+        const user = res.locals.user;
+        if (user) {
+            res.json({something: 'something'});
+        } else {
+            res.status(401).json({
+                message: 'Access denied',
+                code: 'ACCESS_DENIED'
+            });
+        }
+    });
+
+    // export and use this router in the main server
+    return router;
 };
