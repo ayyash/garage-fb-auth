@@ -27,11 +27,11 @@ module.exports = function (sdk) {
                 
                 // save new user to db then return
                 // we don't have bloodType just yet
-                const newUser = {...user, admin: true, newUser: true};
-                profiles.push(newUser);
-                console.log(newUser);
+                const _newuser = {...user, admin: true, newUser: true};
+                profiles.push(_newuser);
+                console.log(_newuser);
 
-                res.json(newUser);
+                res.json(_newuser);
             } else {
                 
                 // return existin user with full profile

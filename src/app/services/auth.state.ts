@@ -3,13 +3,6 @@ import { Auth, idToken } from '@angular/fire/auth';
 import { BehaviorSubject, Observable, defer, switchMap, take } from 'rxjs';
 import { IAuthInfo } from './auth.model';
 
-// to make a cookie readable in SSR, inject the token from nguniversal module
-// import { REQUEST } from '@nguniversal/express-engine/tokens';
-// and make Request available in NodeJs
-// import { Request } from 'express';
-
-
-
 
 @Injectable({ providedIn: 'root' })
 export class AuthState {
@@ -31,7 +24,7 @@ export class AuthState {
     {
         const _localuser: IAuthInfo = JSON.parse(localStorage.getItem('user'));
         if (_localuser) {
-            this.stateItem.next(_localuser);
+            this.UpdateState(_localuser);
             _attn(_localuser);
         }
 
