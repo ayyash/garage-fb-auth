@@ -18,7 +18,7 @@ export class PublicLoginComponent implements OnInit {
 
   login() {
     this.authService
-      .Login('new4@email.com', 'adAd!123')
+      .Login('new@email.com', 'firebase-password')
       .pipe(
         // it's better to pipe catchError
         catchError((error) => {
@@ -37,7 +37,7 @@ export class PublicLoginComponent implements OnInit {
   // example register with email
   signUp() {
     this.authService
-      .Signup('admin2@email.com', 'adAd!123', { bloodType: 'B+' })
+      .Signup('admin@email.com', 'firebase-password', { bloodType: 'B+' })
       .pipe(
         catchError((error) => {
           console.log(error);
