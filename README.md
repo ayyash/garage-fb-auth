@@ -1,8 +1,4 @@
 # garage-fb-auth
 Garage article on Firebase Authentication in Angular
 
-This is  I: keep it forieng
-Three branches:
-- I keep it foreign
-- II bring it home
-- III middle ground
+Find the article here: https://garage.sekrab.com/posts/ii-firebase-user-management-in-angular
