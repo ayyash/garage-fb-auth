@@ -22,11 +22,6 @@ export class AccountStatusPartialComponent implements OnInit {
   // use firebase status
   constructor(private auth: Auth) {}
   ngOnInit(): void {
-    // solution I: keep it foriegn, use authState or user()
-    // this.status$ = user(this.auth).pipe(
-    //   filter((user) => !!user),
-    //   switchMap((user) => (<any>user).getIdTokenResult()),
-    //   map((token) => (<any>token).claims)
-    // );
+   
   }
 }
