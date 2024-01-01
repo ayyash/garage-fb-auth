@@ -14,10 +14,7 @@ module.exports = function (sdk) {
         .then(function (decodedToken) {
           const uid = decodedToken.uid;
           // save in res locals
-          res.locals.user = {
-            uid: uid,
-            ...o, // add profile information here if needed
-          };
+          res.locals.user = decodedToken;
 
           // next
           next();
